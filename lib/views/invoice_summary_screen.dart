@@ -27,7 +27,6 @@ class InvoiceSummaryScreen extends StatelessWidget {
   Future<void> _generateInvoicePDF() async {
     final pdf = pw.Document();
 
-    // Add content to the PDF
     pdf.addPage(pw.Page(
       build: (pw.Context context) {
         return pw.Column(
@@ -85,7 +84,6 @@ class InvoiceSummaryScreen extends StatelessWidget {
       },
     ));
 
-    // Show the print dialog or save the file
     await Printing.layoutPdf(
       onLayout: (format) async => pdf.save(),
     );
@@ -93,7 +91,6 @@ class InvoiceSummaryScreen extends StatelessWidget {
 
   Future<void> generateInvoicePDF() async {
     if (kIsWeb) {
-      // Skip printing functionality or show a message that it's not supported in web
       print('Printing is not supported on the web.');
     } else {
       final pdf = pw.Document();
@@ -159,7 +156,6 @@ class InvoiceSummaryScreen extends StatelessWidget {
         },
       ));
 
-      // Show the print dialog or save the file
       await Printing.layoutPdf(
         onLayout: (format) async => pdf.save(),
       );
@@ -172,7 +168,7 @@ class InvoiceSummaryScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text('Create Invoice'),
-        backgroundColor: Colors.indigo,
+        backgroundColor: Colors.blueGrey[900],
       ),
       body: Row(
         children: [
@@ -185,7 +181,7 @@ class InvoiceSummaryScreen extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    'Company: Zylker Family Mart',
+                    'Zego Mart',
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
                   SizedBox(height: 20),
@@ -198,18 +194,37 @@ class InvoiceSummaryScreen extends StatelessWidget {
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Expanded(flex: 2, child: Text('Name')),
+                              Expanded(
+                                  flex: 2,
+                                  child: Text(
+                                    'Name',
+                                    style: TextStyle(
+                                        color: Colors.black,
+                                        fontWeight: FontWeight.w900),
+                                  )),
                               Expanded(
                                   child: Text('price',
+                                      style: TextStyle(
+                                          color: Colors.black,
+                                          fontWeight: FontWeight.w900),
                                       textAlign: TextAlign.center)),
                               Expanded(
-                                  child:
-                                      Text('Qty', textAlign: TextAlign.center)),
+                                  child: Text('Qty',
+                                      style: TextStyle(
+                                          color: Colors.black,
+                                          fontWeight: FontWeight.w900),
+                                      textAlign: TextAlign.center)),
                               Expanded(
                                   child: Text('Disc',
+                                      style: TextStyle(
+                                          color: Colors.black,
+                                          fontWeight: FontWeight.w900),
                                       textAlign: TextAlign.center)),
                               Expanded(
                                   child: Text('Amount',
+                                      style: TextStyle(
+                                          color: Colors.black,
+                                          fontWeight: FontWeight.w900),
                                       textAlign: TextAlign.right)),
                             ],
                           ),
@@ -261,7 +276,9 @@ class InvoiceSummaryScreen extends StatelessWidget {
                         SizedBox(height: 10),
                         Text('Billed Successfully',
                             style: TextStyle(
-                                fontSize: 18, fontWeight: FontWeight.bold)),
+                                color: Colors.green,
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold)),
                       ],
                     ),
                   ),
@@ -269,30 +286,109 @@ class InvoiceSummaryScreen extends StatelessWidget {
                   _buildRightRow('Order Number', 'CTR362'),
                   _buildRightRow('Bill Number', 'SI178'),
                   Divider(),
-                  _buildRightRow('Payment Summary', ''),
-                  _buildRightRow('Cash', '₹1,407.00'),
-                  _buildRightRow('Total amount paid', '₹1,407.00'),
-                  _buildRightRow('Remaining amount', '₹0.00'),
+                  buildRightRow('Payment Summary', total),
+                  buildRightRow('Cash', total),
+                  buildRightRow('Total amount paid', total),
+                  _buildRightRow('Remaining amount', '0.0'),
                   Divider(),
                   _buildRightRow('Customer Info', ''),
-                  Text('Mr. Deepak Rajkumar',
+                  Text('Mr. Shinchan',
                       style: TextStyle(fontWeight: FontWeight.bold)),
-                  Text('No. 30/21, Winston Apartments, Chennai - 600038'),
+                  Text('No. 5, Tuticorin, Tuticorin - 600008'),
                   Spacer(),
-                  ElevatedButton(
-                    onPressed: () async {
-                      // Call the method to generate the PDF
-                      await _generateInvoicePDF();
-                    },
-                    child: Text('Generate Invoice as PDF'),
-                    style: ElevatedButton.styleFrom(
-                        minimumSize: Size(double.infinity, 48)),
+                  Text(
+                    'Generate Invoice As',
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      Expanded(
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.blueGrey.shade100,
+                            foregroundColor: Colors.white,
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 24.0, vertical: 12.0),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8.0),
+                            ),
+                          ),
+                          onPressed: () async {
+                            await _generateInvoicePDF();
+                          },
+                          child: const Text(
+                            'PDF',
+                            style: TextStyle(
+                                color: Colors.black,
+                                fontWeight: FontWeight.w700),
+                          ),
+                        ),
+                      ),
+                      SizedBox(
+                        width: 10,
+                      ),
+                      Expanded(
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.blueGrey.shade100,
+                            foregroundColor: Colors.white,
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 24.0, vertical: 12.0),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8.0),
+                            ),
+                          ),
+                          onPressed: () async {
+                            await _generateInvoicePDF();
+                          },
+                          child: const Text(
+                            'XPS',
+                            style: TextStyle(
+                                color: Colors.black,
+                                fontWeight: FontWeight.w700),
+                          ),
+                        ),
+                      ),
+                      SizedBox(
+                        width: 10,
+                      ),
+                      Expanded(
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.blueGrey.shade100,
+                            foregroundColor: Colors.white,
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 24.0, vertical: 12.0),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8.0),
+                            ),
+                          ),
+                          onPressed: () async {
+                            await _generateInvoicePDF();
+                          },
+                          child: const Text(
+                            'Print',
+                            style: TextStyle(
+                                color: Colors.black,
+                                fontWeight: FontWeight.w700),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                   SizedBox(height: 10),
                   ElevatedButton(
                     onPressed: () {},
                     child: Text('New Sale'),
                     style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.blue,
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 24.0, vertical: 12.0),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8.0),
+                        ),
                         minimumSize: Size(double.infinity, 48)),
                   ),
                 ],
@@ -315,11 +411,41 @@ class InvoiceSummaryScreen extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Expanded(flex: 2, child: Text(name)),
-              Expanded(child: Text(price, textAlign: TextAlign.center)),
-              Expanded(child: Text(qty, textAlign: TextAlign.center)),
-              Expanded(child: Text(disc, textAlign: TextAlign.center)),
-              Expanded(child: Text(amount, textAlign: TextAlign.right)),
+              Expanded(
+                  flex: 2,
+                  child: Text(
+                    name,
+                    style: TextStyle(
+                        color: Colors.blue, fontWeight: FontWeight.w900),
+                  )),
+              Expanded(
+                  child: Text(
+                '₹ $price',
+                textAlign: TextAlign.center,
+                style:
+                    TextStyle(color: Colors.black, fontWeight: FontWeight.w900),
+              )),
+              Expanded(
+                  child: Text(
+                qty,
+                textAlign: TextAlign.center,
+                style:
+                    TextStyle(color: Colors.black, fontWeight: FontWeight.w900),
+              )),
+              Expanded(
+                  child: Text(
+                '₹$disc',
+                textAlign: TextAlign.center,
+                style:
+                    TextStyle(color: Colors.black, fontWeight: FontWeight.w900),
+              )),
+              Expanded(
+                  child: Text(
+                '₹ $amount',
+                textAlign: TextAlign.right,
+                style:
+                    TextStyle(color: Colors.black, fontWeight: FontWeight.w900),
+              )),
             ],
           ),
           /*  if (isOffer)
@@ -336,14 +462,14 @@ class InvoiceSummaryScreen extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(label,
+          Text(label, style: TextStyle(fontWeight: FontWeight.w900)),
+          Text('₹ ${value.toStringAsFixed(2)}'.toString(),
               style: TextStyle(
-                  fontSize: isTotal ? 18 : 14,
-                  fontWeight: isTotal ? FontWeight.bold : FontWeight.normal)),
-          Text(value.toString(),
-              style: TextStyle(
-                  fontSize: isTotal ? 18 : 14,
-                  fontWeight: isTotal ? FontWeight.bold : FontWeight.normal)),
+                  color: isTotal ? Colors.blue : Colors.black,
+                  fontWeight: FontWeight.w900
+                  /*fontSize: isTotal ? 18 : 14,
+                  fontWeight: isTotal ? FontWeight.bold : FontWeight.normal*/
+                  )),
         ],
       ),
     );
@@ -357,6 +483,23 @@ class InvoiceSummaryScreen extends StatelessWidget {
         children: [
           Text(label, style: TextStyle(fontWeight: FontWeight.bold)),
           if (value.isNotEmpty) Text(value),
+        ],
+      ),
+    );
+  }
+
+  Widget buildRightRow(String label, double value) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 4.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(label, style: TextStyle(fontWeight: FontWeight.bold)),
+          Text('₹ ${value.toStringAsFixed(2)}'.toString(),
+              style: TextStyle(color: Colors.black, fontWeight: FontWeight.w900
+                  /*fontSize: isTotal ? 18 : 14,
+                  fontWeight: isTotal ? FontWeight.bold : FontWeight.normal*/
+                  )),
         ],
       ),
     );
