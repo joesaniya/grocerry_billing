@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bill/models/product.dart';
 import 'package:flutter_bill/views/widgets/alert_box.dart';
 
 class InvoiceScreen extends StatefulWidget {
@@ -8,50 +9,6 @@ class InvoiceScreen extends StatefulWidget {
 
 class _InvoiceScreenState extends State<InvoiceScreen> {
   String selectedCategory = 'All Items';
-
-  final List<Map<String, String>> products = [
-    {
-      'name': 'Almonds',
-      'category': 'Snacks',
-      'image': 'https://via.placeholder.com/150'
-    },
-    {
-      'name': 'Mixed Fruit Preserve',
-      'category': 'Fresh Fruits',
-      'image': 'https://via.placeholder.com/150'
-    },
-    {
-      'name': 'Assorted Biscuits',
-      'category': 'Snacks',
-      'image': 'https://via.placeholder.com/150'
-    },
-    {
-      'name': 'Organic Honey',
-      'category': 'Oils',
-      'image': 'https://via.placeholder.com/150'
-    },
-    {
-      'name': 'Rice',
-      'category': 'Pulses and Grains',
-      'image': 'https://via.placeholder.com/150'
-    },
-    {
-      'name': 'Natural Black Pepper',
-      'category': 'Spices',
-      'image': 'https://via.placeholder.com/150'
-    },
-    {
-      'name': 'Dark Chocolate',
-      'category': 'Chocolates',
-      'image': 'https://via.placeholder.com/150'
-    },
-    {
-      'name': 'Olive Oil',
-      'category': 'Oils',
-      'image': 'https://via.placeholder.com/150'
-    },
-  ];
-
   final List<Map<String, dynamic>> cartItems = [];
   double discount = 0.0;
   double taxRate = 0.1;
@@ -152,7 +109,14 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
                     ]
                         .map(
                           (category) => ListTile(
-                            title: Text(category),
+                            title: Text(
+                              category,
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  color: selectedCategory == category
+                                      ? Colors.blue
+                                      : Colors.black),
+                            ),
                             selected: selectedCategory == category,
                             onTap: () {
                               setState(() {
@@ -201,7 +165,12 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
                               Align(
                                 alignment: Alignment.bottomCenter,
                                 child: Container(
-                                  color: Colors.black.withOpacity(0.6),
+                                  width: double.infinity,
+                                  decoration: BoxDecoration(
+                                      color: Colors.black.withOpacity(0.6),
+                                      borderRadius: BorderRadius.only(
+                                          bottomLeft: Radius.circular(8),
+                                          bottomRight: Radius.circular(8))),
                                   padding: const EdgeInsets.all(8),
                                   child: Text(
                                     product['name']!,
@@ -234,11 +203,16 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
             child: Column(
               children: [
                 Container(
+                  width: double.infinity,
                   padding: const EdgeInsets.all(16),
-                  color: Colors.blueGrey[100],
+                  // color: Colors.blueGrey[100],
                   child: const Text(
                     'Cart',
-                    style: TextStyle(fontWeight: FontWeight.bold),
+                    textAlign: TextAlign.left,
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black,
+                        fontSize: 18),
                   ),
                 ),
                 Expanded(
@@ -248,15 +222,29 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
                       final item = cartItems[index];
                       print('Cart:$item');
                       return ListTile(
-                        title: Text(item['name']),
+                        title: Text(
+                          item['name'],
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: Colors.blue,
+                              fontSize: 16),
+                        ),
                         subtitle: Row(
                           children: [
                             IconButton(
-                              icon: const Icon(Icons.remove),
+                              icon: const Icon(
+                                Icons.remove,
+                              ),
                               onPressed: () => updateCartItem(
                                   item['name'], item['quantity'] - 1),
                             ),
-                            Text('${item['quantity']}'),
+                            Text(
+                              '${item['quantity']}',
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black,
+                                  fontSize: 15),
+                            ),
                             IconButton(
                               icon: const Icon(Icons.add),
                               onPressed: () => updateCartItem(
@@ -266,6 +254,10 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
                         ),
                         trailing: Text(
                           '₹${(item['price'] * item['quantity']).toStringAsFixed(2)}',
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black,
+                              fontSize: 15),
                         ),
                         onLongPress: () => removeCartItem(item['name']),
                       );
@@ -303,9 +295,9 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
                       Text(
                         'Total: ₹${getCartTotal().toStringAsFixed(2)}',
                         style: const TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.blue),
                       ),
                       const SizedBox(height: 8),
                       Row(
@@ -313,24 +305,78 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
                         children: [
                           Expanded(
                             child: ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.blueGrey
+                                    .shade100, // Button background color
+                                foregroundColor: Colors.white, // Text color
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 24.0,
+                                    vertical: 12.0), // Padding
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8.0),
+                                ),
+                              ),
                               onPressed: () {
                                 print('items:$cartItems');
                                 showTotalAmountAlert(
                                     context, getCartTotal(), cartItems);
                               },
-                              child: const Text('Cash [F1]'),
+                              child: const Text(
+                                'Cash [F1]',
+                                style: TextStyle(
+                                    color: Colors.black,
+                                    fontWeight: FontWeight.w700),
+                              ),
                             ),
+                          ),
+                          SizedBox(
+                            width: 10,
                           ),
                           Expanded(
                             child: ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.blueGrey
+                                    .shade100, // Button background color
+                                foregroundColor: Colors.white, // Text color
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 24.0,
+                                    vertical: 12.0), // Padding
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8.0),
+                                ),
+                              ),
                               onPressed: () {},
-                              child: const Text('Credit Card [F2]'),
+                              child: const Text(
+                                'Credit Card [F2]',
+                                style: TextStyle(
+                                    color: Colors.black,
+                                    fontWeight: FontWeight.w700),
+                              ),
                             ),
+                          ),
+                          SizedBox(
+                            width: 10,
                           ),
                           Expanded(
                             child: ElevatedButton(
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.blueGrey
+                                    .shade100, // Button background color
+                                foregroundColor: Colors.white, // Text color
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 24.0,
+                                    vertical: 12.0), // Padding
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8.0),
+                                ),
+                              ),
                               onPressed: () {},
-                              child: const Text('UPI [F3]'),
+                              child: const Text(
+                                'UPI [F3]',
+                                style: TextStyle(
+                                    color: Colors.black,
+                                    fontWeight: FontWeight.w700),
+                              ),
                             ),
                           ),
                         ],

@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:printing/printing.dart';
+import 'package:pdf/widgets.dart' as pw;
+import 'package:flutter/foundation.dart' show kIsWeb;
 
 class InvoiceSummaryScreen extends StatelessWidget {
   final List<Map<String, dynamic>> cartItems;
@@ -20,6 +23,149 @@ class InvoiceSummaryScreen extends StatelessWidget {
     required this.customerContact,
     required this.customerAddress,
   });
+
+  Future<void> _generateInvoicePDF() async {
+    final pdf = pw.Document();
+
+    // Add content to the PDF
+    pdf.addPage(pw.Page(
+      build: (pw.Context context) {
+        return pw.Column(
+          children: [
+            pw.Text('Company: Zylker Family Mart',
+                style:
+                    pw.TextStyle(fontSize: 18, fontWeight: pw.FontWeight.bold)),
+            pw.SizedBox(height: 10),
+            pw.Text('Customer: $customerName'),
+            pw.Text('Contact: $customerContact'),
+            pw.Text('Address: $customerAddress'),
+            pw.SizedBox(height: 20),
+            pw.Text('Items:',
+                style:
+                    pw.TextStyle(fontSize: 16, fontWeight: pw.FontWeight.bold)),
+            pw.ListView(
+              children: cartItems.map((item) {
+                final price = item['price'];
+                final qty = item['quantity'];
+                final amount = price * qty;
+
+                return pw.Row(
+                  children: [
+                    pw.Expanded(child: pw.Text(item['name'])),
+                    pw.Expanded(child: pw.Text(price.toString())),
+                    pw.Expanded(child: pw.Text(qty.toString())),
+                    pw.Expanded(child: pw.Text(amount.toString())),
+                  ],
+                );
+              }).toList(),
+            ),
+            pw.SizedBox(height: 20),
+            pw.Divider(),
+            pw.Row(
+              children: [
+                pw.Expanded(child: pw.Text('Sub Total')),
+                pw.Text(total.toString()),
+              ],
+            ),
+            pw.Row(
+              children: [
+                pw.Expanded(child: pw.Text('Tax')),
+                pw.Text(tax.toString()),
+              ],
+            ),
+            pw.Row(
+              children: [
+                pw.Expanded(child: pw.Text('Total')),
+                pw.Text(total.round().toString(),
+                    style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
+              ],
+            ),
+          ],
+        );
+      },
+    ));
+
+    // Show the print dialog or save the file
+    await Printing.layoutPdf(
+      onLayout: (format) async => pdf.save(),
+    );
+  }
+
+  Future<void> generateInvoicePDF() async {
+    if (kIsWeb) {
+      // Skip printing functionality or show a message that it's not supported in web
+      print('Printing is not supported on the web.');
+    } else {
+      final pdf = pw.Document();
+
+      pdf.addPage(pw.Page(
+        build: (pw.Context context) {
+          return pw.Column(
+            children: [
+              pw.Text('Company: Zylker Family Mart',
+                  style: pw.TextStyle(
+                      fontSize: 18, fontWeight: pw.FontWeight.bold)),
+              pw.SizedBox(height: 10),
+              pw.Text('Customer: Shinchan'),
+              pw.Text('Contact: 9087654421'),
+              pw.Text('Address: Tuticorin'),
+              pw.SizedBox(height: 20),
+              pw.Text('Items:',
+                  style: pw.TextStyle(
+                      fontSize: 16, fontWeight: pw.FontWeight.bold)),
+              pw.ListView.builder(
+                itemCount: cartItems.length,
+                itemBuilder: (context, index) {
+                  final item = cartItems[index];
+                  final price = item['price'];
+                  final qty = item['quantity'];
+                  final amount = price * qty;
+
+                  return pw.Row(
+                    children: [
+                      pw.Expanded(child: pw.Text(item['name'])),
+                      pw.Expanded(child: pw.Text(price.toString())),
+                      pw.Expanded(child: pw.Text(qty.toString())),
+                      pw.Expanded(child: pw.Text(amount.toString())),
+                    ],
+                  );
+                },
+              ),
+              pw.SizedBox(height: 20),
+              pw.Divider(),
+              pw.Row(
+                children: [
+                  pw.Expanded(child: pw.Text('Sub Total')),
+                  pw.Text(
+                    total.toString(),
+                  ),
+                ],
+              ),
+              pw.Row(
+                children: [
+                  pw.Expanded(child: pw.Text('Tax')),
+                  pw.Text(tax.toString()),
+                ],
+              ),
+              pw.Row(
+                children: [
+                  pw.Expanded(child: pw.Text('Total')),
+                  pw.Text(total.round().toString(),
+                      style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
+                ],
+              ),
+            ],
+          );
+        },
+      ));
+
+      // Show the print dialog or save the file
+      await Printing.layoutPdf(
+        onLayout: (format) async => pdf.save(),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     print('cartItem:$cartItems');
@@ -46,17 +192,17 @@ class InvoiceSummaryScreen extends StatelessWidget {
                   Expanded(
                     child: ListView(
                       children: cartItems.map((item) {
-                        final price = item['price']; // Fallback to 0.0 if null
-                        final qty = item['quantity']; // Fallback to 0 if null
+                        final price = item['price'];
+                        final qty = item['quantity'];
                         final amount = price * qty;
                         print('amount:$amount');
 
                         return _buildItemRow(
                           item['name'],
-                          price.toString(), // Ensure it's a string
-                          qty.toString(), // Ensure it's a string
+                          price.toString(),
+                          qty.toString(),
                           '0.0',
-                          amount.toString(), // Convert result to string
+                          amount.toString(),
                         );
                       }).toList(),
                     ),
@@ -107,7 +253,10 @@ class InvoiceSummaryScreen extends StatelessWidget {
                   Text('No. 30/21, Winston Apartments, Chennai - 600038'),
                   Spacer(),
                   ElevatedButton(
-                    onPressed: () {},
+                    onPressed: () async {
+                      // Call the method to generate the PDF
+                      await _generateInvoicePDF();
+                    },
                     child: Text('Generate Invoice as PDF'),
                     style: ElevatedButton.styleFrom(
                         minimumSize: Size(double.infinity, 48)),
@@ -186,371 +335,3 @@ class InvoiceSummaryScreen extends StatelessWidget {
     );
   }
 }
-/*  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Invoice Summary'),
-        backgroundColor: Colors.blueGrey[900],
-      ),
-      body: Row(
-        children: [
-          Expanded(
-            child: Container(
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Cart Items Table
-                    Text(
-                      'Cart Items',
-                      style: Theme.of(context).textTheme.titleLarge,
-                    ),
-                    const SizedBox(height: 10),
-                    Table(
-                      border: TableBorder.all(color: Colors.grey),
-                      columnWidths: const {
-                        0: FlexColumnWidth(0.5),
-                        1: FlexColumnWidth(2),
-                        2: FlexColumnWidth(1),
-                        3: FlexColumnWidth(1),
-                        4: FlexColumnWidth(1),
-                      },
-                      children: [
-                        // Table Header
-                        TableRow(
-                          decoration:
-                              BoxDecoration(color: Colors.blueGrey[100]),
-                          children: const [
-                            Padding(
-                              padding: EdgeInsets.all(8.0),
-                              child: Text('No',
-                                  style:
-                                      TextStyle(fontWeight: FontWeight.bold)),
-                            ),
-                            Padding(
-                              padding: EdgeInsets.all(8.0),
-                              child: Text('Name',
-                                  style:
-                                      TextStyle(fontWeight: FontWeight.bold)),
-                            ),
-                            Padding(
-                              padding: EdgeInsets.all(8.0),
-                              child: Text('Price',
-                                  style:
-                                      TextStyle(fontWeight: FontWeight.bold)),
-                            ),
-                            Padding(
-                              padding: EdgeInsets.all(8.0),
-                              child: Text('Qty',
-                                  style:
-                                      TextStyle(fontWeight: FontWeight.bold)),
-                            ),
-                            Padding(
-                              padding: EdgeInsets.all(8.0),
-                              child: Text('Amount',
-                                  style:
-                                      TextStyle(fontWeight: FontWeight.bold)),
-                            ),
-                          ],
-                        ),
-                        // Cart Items
-                        ...cartItems.asMap().entries.map((entry) {
-                          final index = entry.key + 1;
-                          final item = entry.value;
-                          return TableRow(
-                            children: [
-                              Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Text(index.toString()),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Text(item['name']),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Text(
-                                    '₹${item['price'].toStringAsFixed(2)}'),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Text(item['quantity'].toString()),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Text(
-                                  '₹${(item['price'] * item['quantity']).toStringAsFixed(2)}',
-                                ),
-                              ),
-                            ],
-                          );
-                        }).toList(),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-          Container(
-            child: Column(
-              children: [
-                const SizedBox(height: 20),
-
-                // Payment Summary
-                Text(
-                  'Payment Summary',
-                  style: Theme.of(context).textTheme.titleLarge,
-                ),
-                const SizedBox(height: 10),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const Text('Subtotal:'),
-                    Text('₹${subtotal.toStringAsFixed(2)}'),
-                  ],
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const Text('Tax:'),
-                    Text('₹${tax.toStringAsFixed(2)}'),
-                  ],
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const Text('Total:'),
-                    Text(
-                      '₹${total.toStringAsFixed(2)}',
-                      style: const TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                  ],
-                ),
-
-                const SizedBox(height: 20),
-
-                // Customer Info
-                Text(
-                  'Customer Info',
-                  style: Theme.of(context).textTheme.titleLarge,
-                ),
-                const SizedBox(height: 10),
-                Text('Name: $customerName'),
-                Text('Contact: $customerContact'),
-                Text('Address: $customerAddress'),
-
-                const SizedBox(height: 20),
-
-                // Generate Invoice Buttons
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    ElevatedButton(
-                      onPressed: () {},
-                      child: const Text('PDF'),
-                    ),
-                    ElevatedButton(
-                      onPressed: () {},
-                      child: const Text('XPS'),
-                    ),
-                    ElevatedButton(
-                      onPressed: () {},
-                      child: const Text('Print'),
-                    ),
-                  ],
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-
-      /*  body: Column(
-        children: [
-          Expanded(
-            child: SingleChildScrollView(
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Cart Items Table
-                    Text(
-                      'Cart Items',
-                      style: Theme.of(context).textTheme.titleLarge,
-                    ),
-                    const SizedBox(height: 10),
-                    Table(
-                      border: TableBorder.all(color: Colors.grey),
-                      columnWidths: const {
-                        0: FlexColumnWidth(0.5),
-                        1: FlexColumnWidth(2),
-                        2: FlexColumnWidth(1),
-                        3: FlexColumnWidth(1),
-                        4: FlexColumnWidth(1),
-                      },
-                      children: [
-                        // Table Header
-                        TableRow(
-                          decoration:
-                              BoxDecoration(color: Colors.blueGrey[100]),
-                          children: const [
-                            Padding(
-                              padding: EdgeInsets.all(8.0),
-                              child: Text('No',
-                                  style:
-                                      TextStyle(fontWeight: FontWeight.bold)),
-                            ),
-                            Padding(
-                              padding: EdgeInsets.all(8.0),
-                              child: Text('Name',
-                                  style:
-                                      TextStyle(fontWeight: FontWeight.bold)),
-                            ),
-                            Padding(
-                              padding: EdgeInsets.all(8.0),
-                              child: Text('Price',
-                                  style:
-                                      TextStyle(fontWeight: FontWeight.bold)),
-                            ),
-                            Padding(
-                              padding: EdgeInsets.all(8.0),
-                              child: Text('Qty',
-                                  style:
-                                      TextStyle(fontWeight: FontWeight.bold)),
-                            ),
-                            Padding(
-                              padding: EdgeInsets.all(8.0),
-                              child: Text('Amount',
-                                  style:
-                                      TextStyle(fontWeight: FontWeight.bold)),
-                            ),
-                          ],
-                        ),
-                        // Cart Items
-                        ...cartItems.asMap().entries.map((entry) {
-                          final index = entry.key + 1;
-                          final item = entry.value;
-                          return TableRow(
-                            children: [
-                              Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Text(index.toString()),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Text(item['name']),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Text(
-                                    '₹${item['price'].toStringAsFixed(2)}'),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Text(item['quantity'].toString()),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Text(
-                                  '₹${(item['price'] * item['quantity']).toStringAsFixed(2)}',
-                                ),
-                              ),
-                            ],
-                          );
-                        }).toList(),
-                      ],
-                    ),
-
-                    const SizedBox(height: 20),
-
-                    // Payment Summary
-                    Text(
-                      'Payment Summary',
-                      style: Theme.of(context).textTheme.titleLarge,
-                    ),
-                    const SizedBox(height: 10),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        const Text('Subtotal:'),
-                        Text('₹${subtotal.toStringAsFixed(2)}'),
-                      ],
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        const Text('Tax:'),
-                        Text('₹${tax.toStringAsFixed(2)}'),
-                      ],
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        const Text('Total:'),
-                        Text(
-                          '₹${total.toStringAsFixed(2)}',
-                          style: const TextStyle(fontWeight: FontWeight.bold),
-                        ),
-                      ],
-                    ),
-
-                    const SizedBox(height: 20),
-
-                    // Customer Info
-                    Text(
-                      'Customer Info',
-                      style: Theme.of(context).textTheme.titleLarge,
-                    ),
-                    const SizedBox(height: 10),
-                    Text('Name: $customerName'),
-                    Text('Contact: $customerContact'),
-                    Text('Address: $customerAddress'),
-
-                    const SizedBox(height: 20),
-
-                    // Generate Invoice Buttons
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        ElevatedButton(
-                          onPressed: () {},
-                          child: const Text('PDF'),
-                        ),
-                        ElevatedButton(
-                          onPressed: () {},
-                          child: const Text('XPS'),
-                        ),
-                        ElevatedButton(
-                          onPressed: () {},
-                          child: const Text('Print'),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-
-          // New Sale Button
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: ElevatedButton(
-              onPressed: () {
-                Navigator.pop(context);
-              },
-              child: const Text('New Sale'),
-              style: ElevatedButton.styleFrom(
-                minimumSize: const Size(double.infinity, 50),
-              ),
-            ),
-          ),
-        ],
-      ),
-   */
-    );
-  }*/
