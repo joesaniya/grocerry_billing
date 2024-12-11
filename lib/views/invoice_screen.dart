@@ -24,7 +24,7 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
 
   void addToCart(Map<String, String> product) {
     final price =
-        (100.0 + product['name']!.length * 5).toDouble(); // Example price logic
+        (100.0 + product['name']!.length * 5).toDouble(); 
     setState(() {
       final existingItem = cartItems.firstWhere(
         (item) => item['name'] == product['name'],
@@ -136,7 +136,7 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
           Expanded(
             child: Column(
               children: [
-                // Product Grid
+              
                 Expanded(
                   child: GridView.builder(
                     padding: const EdgeInsets.all(8),
@@ -282,7 +282,7 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
                         },
                       ),
                       const SizedBox(height: 10),
-                      // Show the tax rate and calculate the tax
+
                       Text(
                         'Tax (${(taxRate * 100).toStringAsFixed(0)}%): ₹${(getCartTotal() - (getCartTotal() / (1 + taxRate))).toStringAsFixed(2)}',
                         style: const TextStyle(
@@ -291,7 +291,7 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
                         ),
                       ),
                       const SizedBox(height: 8),
-                      // Show the total amount
+
                       Text(
                         'Total: ₹${getCartTotal().toStringAsFixed(2)}',
                         style: const TextStyle(
@@ -307,11 +307,11 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
                             child: ElevatedButton(
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: Colors.blueGrey
-                                    .shade100, // Button background color
-                                foregroundColor: Colors.white, // Text color
+                                    .shade100, 
+                                foregroundColor: Colors.white, 
                                 padding: const EdgeInsets.symmetric(
                                     horizontal: 24.0,
-                                    vertical: 12.0), // Padding
+                                    vertical: 12.0), 
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(8.0),
                                 ),
@@ -336,11 +336,11 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
                             child: ElevatedButton(
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: Colors.blueGrey
-                                    .shade100, // Button background color
-                                foregroundColor: Colors.white, // Text color
+                                    .shade100,
+                                foregroundColor: Colors.white, 
                                 padding: const EdgeInsets.symmetric(
                                     horizontal: 24.0,
-                                    vertical: 12.0), // Padding
+                                    vertical: 12.0), 
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(8.0),
                                 ),
@@ -361,11 +361,11 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
                             child: ElevatedButton(
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: Colors.blueGrey
-                                    .shade100, // Button background color
-                                foregroundColor: Colors.white, // Text color
+                                    .shade100,
+                                foregroundColor: Colors.white, 
                                 padding: const EdgeInsets.symmetric(
                                     horizontal: 24.0,
-                                    vertical: 12.0), // Padding
+                                    vertical: 12.0), 
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(8.0),
                                 ),
