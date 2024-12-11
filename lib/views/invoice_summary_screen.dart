@@ -190,21 +190,48 @@ class InvoiceSummaryScreen extends StatelessWidget {
                   ),
                   SizedBox(height: 20),
                   Expanded(
-                    child: ListView(
-                      children: cartItems.map((item) {
-                        final price = item['price'];
-                        final qty = item['quantity'];
-                        final amount = price * qty;
-                        print('amount:$amount');
+                    child: Column(
+                      children: [
+                        Container(
+                          height: 50,
+                          color: Colors.blueGrey.shade100,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Expanded(flex: 2, child: Text('Name')),
+                              Expanded(
+                                  child: Text('price',
+                                      textAlign: TextAlign.center)),
+                              Expanded(
+                                  child:
+                                      Text('Qty', textAlign: TextAlign.center)),
+                              Expanded(
+                                  child: Text('Disc',
+                                      textAlign: TextAlign.center)),
+                              Expanded(
+                                  child: Text('Amount',
+                                      textAlign: TextAlign.right)),
+                            ],
+                          ),
+                        ),
+                        ListView(
+                          shrinkWrap: true,
+                          children: cartItems.map((item) {
+                            final price = item['price'];
+                            final qty = item['quantity'];
+                            final amount = price * qty;
+                            print('amount:$amount');
 
-                        return _buildItemRow(
-                          item['name'],
-                          price.toString(),
-                          qty.toString(),
-                          '0.0',
-                          amount.toString(),
-                        );
-                      }).toList(),
+                            return _buildItemRow(
+                              item['name'],
+                              price.toString(),
+                              qty.toString(),
+                              '0.0',
+                              amount.toString(),
+                            );
+                          }).toList(),
+                        ),
+                      ],
                     ),
                   ),
                   Divider(),
