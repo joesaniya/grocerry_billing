@@ -3,7 +3,7 @@ import 'package:printing/printing.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:flutter/foundation.dart' show kIsWeb;
 
-class InvoiceSummaryScreen extends StatelessWidget {
+class InvoiceSummaryScreen extends StatefulWidget {
   final List<Map<String, dynamic>> cartItems;
   final double subtotal;
   final double tax;
@@ -24,6 +24,30 @@ class InvoiceSummaryScreen extends StatelessWidget {
     required this.customerAddress,
   });
 
+  @override
+  State<InvoiceSummaryScreen> createState() => _InvoiceSummaryScreenState();
+}
+
+class _InvoiceSummaryScreenState extends State<InvoiceSummaryScreen>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      duration: const Duration(seconds: 1),
+      vsync: this,
+    );
+    _controller.forward(); 
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
   Future<void> _generateInvoicePDF() async {
     final pdf = pw.Document();
 
@@ -35,15 +59,15 @@ class InvoiceSummaryScreen extends StatelessWidget {
                 style:
                     pw.TextStyle(fontSize: 18, fontWeight: pw.FontWeight.bold)),
             pw.SizedBox(height: 10),
-            pw.Text('Customer: $customerName'),
-            pw.Text('Contact: $customerContact'),
-            pw.Text('Address: $customerAddress'),
+            pw.Text('Customer: ${widget.customerName}'),
+            pw.Text('Contact: ${widget.customerContact}'),
+            pw.Text('Address: ${widget.customerAddress}'),
             pw.SizedBox(height: 20),
             pw.Text('Items:',
                 style:
                     pw.TextStyle(fontSize: 16, fontWeight: pw.FontWeight.bold)),
             pw.ListView(
-              children: cartItems.map((item) {
+              children: widget.cartItems.map((item) {
                 final price = item['price'];
                 final qty = item['quantity'];
                 final amount = price * qty;
@@ -63,19 +87,19 @@ class InvoiceSummaryScreen extends StatelessWidget {
             pw.Row(
               children: [
                 pw.Expanded(child: pw.Text('Sub Total')),
-                pw.Text(total.toString()),
+                pw.Text(widget.total.toString()),
               ],
             ),
             pw.Row(
               children: [
                 pw.Expanded(child: pw.Text('Tax')),
-                pw.Text(tax.toString()),
+                pw.Text(widget.tax.toString()),
               ],
             ),
             pw.Row(
               children: [
                 pw.Expanded(child: pw.Text('Total')),
-                pw.Text(total.round().toString(),
+                pw.Text(widget.total.round().toString(),
                     style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
               ],
             ),
@@ -111,9 +135,9 @@ class InvoiceSummaryScreen extends StatelessWidget {
                   style: pw.TextStyle(
                       fontSize: 16, fontWeight: pw.FontWeight.bold)),
               pw.ListView.builder(
-                itemCount: cartItems.length,
+                itemCount: widget.cartItems.length,
                 itemBuilder: (context, index) {
-                  final item = cartItems[index];
+                  final item = widget.cartItems[index];
                   final price = item['price'];
                   final qty = item['quantity'];
                   final amount = price * qty;
@@ -134,20 +158,20 @@ class InvoiceSummaryScreen extends StatelessWidget {
                 children: [
                   pw.Expanded(child: pw.Text('Sub Total')),
                   pw.Text(
-                    total.toString(),
+                    widget.total.toString(),
                   ),
                 ],
               ),
               pw.Row(
                 children: [
                   pw.Expanded(child: pw.Text('Tax')),
-                  pw.Text(tax.toString()),
+                  pw.Text(widget.tax.toString()),
                 ],
               ),
               pw.Row(
                 children: [
                   pw.Expanded(child: pw.Text('Total')),
-                  pw.Text(total.round().toString(),
+                  pw.Text(widget.total.round().toString(),
                       style: pw.TextStyle(fontWeight: pw.FontWeight.bold)),
                 ],
               ),
@@ -164,7 +188,7 @@ class InvoiceSummaryScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print('cartItem:$cartItems');
+    print('cartItem:${widget.cartItems}');
     return Scaffold(
       appBar: AppBar(
         title: Text('Create Invoice'),
@@ -231,7 +255,7 @@ class InvoiceSummaryScreen extends StatelessWidget {
                         ),
                         ListView(
                           shrinkWrap: true,
-                          children: cartItems.map((item) {
+                          children: widget.cartItems.map((item) {
                             final price = item['price'];
                             final qty = item['quantity'];
                             final amount = price * qty;
@@ -250,11 +274,12 @@ class InvoiceSummaryScreen extends StatelessWidget {
                     ),
                   ),
                   Divider(),
-                  _buildSummaryRow('Sub Total', total),
-                  _buildSummaryRow('Tax', tax),
-                  _buildSummaryRow('Round Off', total.round().toDouble()),
+                  _buildSummaryRow('Sub Total', widget.total),
+                  _buildSummaryRow('Tax', widget.tax),
+                  _buildSummaryRow(
+                      'Round Off', widget.total.round().toDouble()),
                   Divider(),
-                  _buildSummaryRow('Total', total, isTotal: true),
+                  _buildSummaryRow('Total', widget.total, isTotal: true),
                 ],
               ),
             ),
@@ -272,7 +297,20 @@ class InvoiceSummaryScreen extends StatelessWidget {
                   Center(
                     child: Column(
                       children: [
-                        Icon(Icons.check_circle, color: Colors.green, size: 48),
+                        AnimatedBuilder(
+                          animation: _controller,
+                          builder: (context, child) {
+                            return Transform.scale(
+                              scale: _controller.value,
+                              child: child,
+                            );
+                          },
+                          child: Icon(
+                            Icons.check_circle,
+                            color: Colors.green,
+                            size: 48,
+                          ),
+                        ),
                         SizedBox(height: 10),
                         Text('Billed Successfully',
                             style: TextStyle(
@@ -288,8 +326,8 @@ class InvoiceSummaryScreen extends StatelessWidget {
                   Divider(),
                   Text('Payment Summary',
                       style: TextStyle(fontWeight: FontWeight.w900)),
-                  buildRightRow('Cash', total),
-                  buildRightRow('Total amount paid', total),
+                  buildRightRow('Cash', widget.total),
+                  buildRightRow('Total amount paid', widget.total),
                   _buildRightRow('Remaining amount', '0.0'),
                   Divider(),
                   _buildRightRow('Customer Info', ''),
