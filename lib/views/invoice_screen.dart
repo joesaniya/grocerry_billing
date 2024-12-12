@@ -23,8 +23,7 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
   }
 
   void addToCart(Map<String, String> product) {
-    final price =
-        (100.0 + product['name']!.length * 5).toDouble(); 
+    final price = (100.0 + product['name']!.length * 5).toDouble();
     setState(() {
       final existingItem = cartItems.firstWhere(
         (item) => item['name'] == product['name'],
@@ -136,7 +135,6 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
           Expanded(
             child: Column(
               children: [
-              
                 Expanded(
                   child: GridView.builder(
                     padding: const EdgeInsets.all(8),
@@ -252,14 +250,23 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
                             ),
                           ],
                         ),
-                        trailing: Text(
-                          '₹${(item['price'] * item['quantity']).toStringAsFixed(2)}',
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              color: Colors.black,
-                              fontSize: 15),
+                        trailing: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              '₹${(item['price'] * item['quantity']).toStringAsFixed(2)}',
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black,
+                                fontSize: 15,
+                              ),
+                            ),
+                            IconButton(
+                              icon: const Icon(Icons.delete, color: Colors.red),
+                              onPressed: () => removeCartItem(item['name']),
+                            ),
+                          ],
                         ),
-                        onLongPress: () => removeCartItem(item['name']),
                       );
                     },
                   ),
@@ -282,7 +289,6 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
                         },
                       ),
                       const SizedBox(height: 10),
-
                       Text(
                         'Tax (${(taxRate * 100).toStringAsFixed(0)}%): ₹${(getCartTotal() - (getCartTotal() / (1 + taxRate))).toStringAsFixed(2)}',
                         style: const TextStyle(
@@ -291,7 +297,6 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
                         ),
                       ),
                       const SizedBox(height: 8),
-
                       Text(
                         'Total: ₹${getCartTotal().toStringAsFixed(2)}',
                         style: const TextStyle(
@@ -306,12 +311,10 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
                           Expanded(
                             child: ElevatedButton(
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.blueGrey
-                                    .shade100, 
-                                foregroundColor: Colors.white, 
+                                backgroundColor: Colors.blueGrey.shade100,
+                                foregroundColor: Colors.white,
                                 padding: const EdgeInsets.symmetric(
-                                    horizontal: 24.0,
-                                    vertical: 12.0), 
+                                    horizontal: 24.0, vertical: 12.0),
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(8.0),
                                 ),
@@ -335,12 +338,10 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
                           Expanded(
                             child: ElevatedButton(
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.blueGrey
-                                    .shade100,
-                                foregroundColor: Colors.white, 
+                                backgroundColor: Colors.blueGrey.shade100,
+                                foregroundColor: Colors.white,
                                 padding: const EdgeInsets.symmetric(
-                                    horizontal: 24.0,
-                                    vertical: 12.0), 
+                                    horizontal: 24.0, vertical: 12.0),
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(8.0),
                                 ),
@@ -360,12 +361,10 @@ class _InvoiceScreenState extends State<InvoiceScreen> {
                           Expanded(
                             child: ElevatedButton(
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.blueGrey
-                                    .shade100,
-                                foregroundColor: Colors.white, 
+                                backgroundColor: Colors.blueGrey.shade100,
+                                foregroundColor: Colors.white,
                                 padding: const EdgeInsets.symmetric(
-                                    horizontal: 24.0,
-                                    vertical: 12.0), 
+                                    horizontal: 24.0, vertical: 12.0),
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(8.0),
                                 ),

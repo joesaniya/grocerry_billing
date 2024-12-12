@@ -286,14 +286,16 @@ class InvoiceSummaryScreen extends StatelessWidget {
                   _buildRightRow('Order Number', 'CTR362'),
                   _buildRightRow('Bill Number', 'SI178'),
                   Divider(),
-                  buildRightRow('Payment Summary', total),
+                  Text('Payment Summary',
+                      style: TextStyle(fontWeight: FontWeight.w900)),
                   buildRightRow('Cash', total),
                   buildRightRow('Total amount paid', total),
                   _buildRightRow('Remaining amount', '0.0'),
                   Divider(),
                   _buildRightRow('Customer Info', ''),
                   Text('Mr. Shinchan',
-                      style: TextStyle(fontWeight: FontWeight.bold)),
+                      style: TextStyle(
+                          fontWeight: FontWeight.bold, color: Colors.blue)),
                   Text('No. 5, Tuticorin, Tuticorin - 600008'),
                   Spacer(),
                   Text(
@@ -478,11 +480,13 @@ class InvoiceSummaryScreen extends StatelessWidget {
   Widget _buildRightRow(String label, String value) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      child: Row(
+        // crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(label, style: TextStyle(fontWeight: FontWeight.bold)),
-          if (value.isNotEmpty) Text(value),
+          Text(label, style: TextStyle(fontWeight: FontWeight.w700)),
+          if (value.isNotEmpty)
+            Text(value, style: TextStyle(fontWeight: FontWeight.w700)),
         ],
       ),
     );
@@ -491,12 +495,12 @@ class InvoiceSummaryScreen extends StatelessWidget {
   Widget buildRightRow(String label, double value) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(label, style: TextStyle(fontWeight: FontWeight.bold)),
+          Text(label, style: TextStyle(fontWeight: FontWeight.w600)),
           Text('₹ ${value.toStringAsFixed(2)}'.toString(),
-              style: TextStyle(color: Colors.black, fontWeight: FontWeight.w900
+              style: TextStyle(color: Colors.black, fontWeight: FontWeight.w600
                   /*fontSize: isTotal ? 18 : 14,
                   fontWeight: isTotal ? FontWeight.bold : FontWeight.normal*/
                   )),
